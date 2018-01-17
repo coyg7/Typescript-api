@@ -3,7 +3,7 @@ require('dotenv').config();
 
 module.exports = {
   development: {
-    client: process.env.DB_CLIENT || 'mssql',
+    client: process.env.DB_CLIENT || 'pg',
     connection: {
       charset: 'utf8',
       user: process.env.DB_USER,

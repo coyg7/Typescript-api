@@ -34,6 +34,21 @@ export function show(req: Request, res: Response, next: NextFunction): void {
 }
 
 /**
+ * Register user
+ *
+ * @param  {Request} req
+ * @param  {Response} res
+ * @param  {NextFunction} next
+ */
+export function register(req: Request, res: Response, next: NextFunction): void {
+  userService
+    .create(req.body)
+    .then((result: {}) => res.status(HTTPStatus.CREATED).json(result))
+    .catch((error: {}) => next(error));
+}
+
+
+/**
  * Update specific user information
  *
  * @param  {Request} req

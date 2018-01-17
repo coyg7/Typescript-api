@@ -7,6 +7,7 @@ export function up(knex) {
     table.increments();
     table.string('name');
     table.string('email').unique();
+    table.string('password');
     table.timestamps(true, true);
   });
 }

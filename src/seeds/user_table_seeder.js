@@ -13,11 +13,13 @@ export function seed(knex, Promise) {
         knex('users').insert([
           {
             name: 'Sagar Chamling',
-            email: 'sgr.raee@gmail.com'
+            email: 'sgr.raee@gmail.com',
+            password: '123123'
           },
           {
             name: 'Safal Pandey',
-            email: 'safal.pandey.sp@gmail.com'
+            email: 'safal.pandey.sp@gmail.com',
+            password: '123123'
           }
         ])
       ]);

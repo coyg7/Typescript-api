@@ -20,7 +20,7 @@ export default {
   database: {
     client: isTestEnvironment
       ? process.env.TEST_DB_CLIENT
-      : process.env.DB_CLIENT || 'mssql',
+      : process.env.DB_CLIENT || 'pg',
     connection: {
       charset: 'utf8',
       user: isTestEnvironment ? process.env.TEST_DB_USER : process.env.DB_USER,
