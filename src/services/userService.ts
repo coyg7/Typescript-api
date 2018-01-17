@@ -12,7 +12,7 @@ import RegisterBody from '../domain/RegisterBody';
  */
 export function create(body: RegisterBody): Promise<{}> {
   return knex('users')
-    .insert({ name: body.name, email: body.email })
+    .insert({ name: body.name, email: body.email, password: body.password })
     .returning('*')
     .then((data: number[]) => ({ data: data[0] }));
 }
@@ -73,7 +73,11 @@ export function fetchAll(): Promise<{}> {
 export function update(body: UpdateBody): Promise<{}> {
   return knex('users')
     .where('id', body.id)
-    .update({ name: body.name })
+    .update({ 
+      name: body.name,
+      email: body.email,
+      password: body.password
+    })
     .returning('*')
     .then((data: number[]) => ({ data: data[0] }));
 }

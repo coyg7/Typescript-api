@@ -1,7 +1,9 @@
-import { request } from 'http';
+import {request} from 'http';
 import * as HTTPStatus from 'http-status-codes';
 import * as userService from '../services/userService';
-import { Request, Response, NextFunction } from 'express';
+import {Request, Response, NextFunction, Router } from 'express';
+
+const router = Router();
 
 /**
  * Get list of user
@@ -11,12 +13,12 @@ import { Request, Response, NextFunction } from 'express';
  * @param  {NextFunction} next
  * @returns void
  */
-export function index(req: Request, res: Response, next: NextFunction): void {
+router.get('/', (req: Request, res: Response, next: NextFunction): void => {
   userService
     .fetchAll()
     .then((result: {}) => res.status(HTTPStatus.OK).json(result))
     .catch((error: {}) => next(error));
-}
+});
 
 /**
  * Get specific user
@@ -26,12 +28,16 @@ export function index(req: Request, res: Response, next: NextFunction): void {
  * @param  {NextFunction} next
  * @returns void
  */
-export function show(req: Request, res: Response, next: NextFunction): void {
-  userService
-    .findById(req.params.id)
-    .then((result = {}) => res.status(HTTPStatus.OK).json(result))
-    .catch((error: {}) => next(error));
-}
+
+router.get(
+  '/:id',
+  (req: Request, res: Response, next: NextFunction): void => {
+    userService
+      .findById(req.params.id)
+      .then((result = {}) => res.status(HTTPStatus.OK).json(result))
+      .catch((error: {}) => next(error));
+  }
+);
 
 /**
  * Register user
@@ -40,12 +46,17 @@ export function show(req: Request, res: Response, next: NextFunction): void {
  * @param  {Response} res
  * @param  {NextFunction} next
  */
-export function register(req: Request, res: Response, next: NextFunction): void {
+
+router.post('/register', (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   userService
     .create(req.body)
     .then((result: {}) => res.status(HTTPStatus.CREATED).json(result))
     .catch((error: {}) => next(error));
-}
+});
 
 
 /**
@@ -56,13 +67,14 @@ export function register(req: Request, res: Response, next: NextFunction): void 
  * @param  {NextFunction} next
  * @returns void
  */
-export function update(req: Request, res: Response, next: NextFunction): void {
+router.put('/:id', (req: Request, res: Response, next: NextFunction): void => {
   req.body.id = req.params.id;
   userService
     .update(req.body)
     .then((result: {}) => res.status(HTTPStatus.OK).json(result))
     .catch((error: {}) => next(error));
-}
+});
+
 
 /**
  * Delete specific user information
@@ -72,9 +84,13 @@ export function update(req: Request, res: Response, next: NextFunction): void {
  * @param  {NextFunction} next
  * @returns void
  */
-export function remove(req: Request, res: Response, next: NextFunction): void {
+
+router.delete('/:id', (req: Request, res: Response, next: NextFunction): void => {
   userService
     .removeUserById(req.params.id)
     .then((result: {}) => res.status(HTTPStatus.OK).json(result))
     .catch((error: {}) => next(error));
-}
+});
+
+
+export default router;
