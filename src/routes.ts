@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import homeController from './controllers/homeController';
 import userController from './controllers/userController';
+import todoController from './controllers/todoController';
 import { uniqueEmail, userExists } from './validators/userValidator';
 
 const router = Router();
@@ -8,6 +9,7 @@ const router = Router();
 router.use('/', homeController);
 
 router.use('/users', userController);
+router.use('/todo', todoController );
 
 // router.get('/users', userController.index);
 // router.get('/users/:id', userController.show);
