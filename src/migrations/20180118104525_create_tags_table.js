@@ -1,6 +1,5 @@
-import * as Knex from 'knex';
-
 /**
+ * Create tags table
  * @param  {object} knex
  * @return {Promise}
  */
@@ -9,14 +8,15 @@ export function up(knex) {
     table.increments('id').primary();
     table
       .timestamp('created_at')
-      .notNullable()
+      .notNull()
       .defaultTo(knex.raw('now()'));
-    table.timestamp('updated_at').notNullable();
-    table.string('tag').notNullable();
+    table.timestamp('updated_at');
+    table.string('tag').notNull();
   });
 }
 
 /**
+ * Drop tags table
  * @param  {object} knex
  * @return {Promise}
  */

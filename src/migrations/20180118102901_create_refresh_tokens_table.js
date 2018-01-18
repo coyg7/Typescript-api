@@ -1,7 +1,5 @@
-import Knex, { SchemaBuilder } from 'knex';
-
-
 /**
+ * Create table for storing refresh tokens
  * @param  {object} knex
  * @return {Promise}
  */
@@ -10,15 +8,23 @@ export function up(knex) {
     table.increments('id').primary();
     table
       .timestamp('created_at')
-      .notNullable()
+      .notNull()
       .defaultTo(knex.raw('now()'));
-    table.timestamp('updated_at').notNullable();
-    table.integer('user_id').unique().notNullable();
-    table.foreign('user_id').references('users.id').onDelete('CASCADE')
+    table.timestamp('updated_at');
+    table.string('token').notNull();
+    table
+      .integer('user_id')
+      .unique()
+      .notNull();
+    table
+      .foreign('user_id')
+      .references('users.id')
+      .onDelete('CASCADE');
   });
 }
 
 /**
+ * Drop table for storing refresh tokens
  * @param  {object} knex
  * @return {Promise}
  */
