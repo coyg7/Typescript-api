@@ -6,7 +6,6 @@ import * as bookshelfJs from 'bookshelf';
  * Database connection.
  */
 export const knex = client(config.database);
-
 const bookshelf = bookshelfJs(knex);
 
 bookshelf.plugin([
@@ -17,9 +16,3 @@ bookshelf.plugin([
 ]);
 
 export default bookshelf;
-
-
-/**
- * Database connection.
- */
-

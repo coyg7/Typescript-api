@@ -1,6 +1,6 @@
+import Todo from './todo';
+import Token from './tokens';
 import bookshelf from '../config/db';
-import todo from './todo';
-import token from './tokens';
 import * as Bookshelf from 'bookshelf';
 
 const TABLE_NAME = 'users';
@@ -9,22 +9,22 @@ const TABLE_NAME = 'users';
  * Users model
  */
 
- class User extends bookshelf.Model <User>{
-   get tableName() {
-     return TABLE_NAME;
-   }
+class User extends bookshelf.Model<User>{
+  get tableName() {
+    return TABLE_NAME;
+  }
 
-   get hasTimestamps() {
-     return true;
-   }
+  get hasTimestamps() {
+    return true;
+  }
 
-  //  todo() {
-  //    return this.hasMany(todo);
-  //  }
+  todo(): Bookshelf.Collection<Todo> {
+    return this.hasMany(Todo);
+  }
 
-  //  token() {
-  //    return this.hasOne(token);
-  //  }
- }
+  token(): Bookshelf.Model<Token> {
+    return this.hasOne(Token);
+  }
+}
 
- export default User;
+export default User;

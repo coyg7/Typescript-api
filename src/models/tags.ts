@@ -1,5 +1,6 @@
+import Todo from './todo';
 import bookshelf from '../config/db';
-import todo from '../models/todo';
+import * as Bookshelf from 'bookshelf';
 
 const TABLE_NAME = 'tags';
 
@@ -7,18 +8,18 @@ const TABLE_NAME = 'tags';
  * Tags model
  */
 
- class Tags extends bookshelf.Model {
-   get tableName() {
-     return TABLE_NAME;
-   }
+class Tags extends bookshelf.Model<Tags> {
+  get tableName() {
+    return TABLE_NAME;
+  }
 
-   get hasTimestamps() {
-     return true;
-   }
+  get hasTimestamps() {
+    return true;
+  }
 
-   todo() {
-     this.belongsToMany(todo);
-   }
- }
+  todo(): Bookshelf.Collection<Todo> {
+    return this.belongsToMany(Todo);
+  }
+}
 
- export default Tags;
+export default Tags;

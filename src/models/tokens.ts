@@ -1,24 +1,24 @@
+import User from './user';
 import bookshelf from '../config/db';
-import user from './user';
+import * as Bookshelf from 'bookshelf';
 
 const TABLE_NAME = 'tokens';
 
 /**
  * Tokens model
  */
+class Tokens extends bookshelf.Model<Tokens> {
+  get tableName() {
+    return TABLE_NAME;
+  }
 
- class Tokens extends bookshelf.Model {
-    get tableName() {
-      return TABLE_NAME;
-    }
+  get hasTimestamps() {
+    return true;
+  }
 
-    get hasTimestamps() {
-      return true;
-    }
+  user(): Bookshelf.Model<User> {
+    return this.belongsTo(User);
+  }
+}
 
-    user() {
-      return this.belongsTo(user);
-    }
- }
-
- export default Tokens;
+export default Tokens;

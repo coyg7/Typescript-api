@@ -1,10 +1,15 @@
 import * as Boom from 'boom';
+import Token from '../models/tokens';
+
 import { knex } from '../config/db';
 import lang from '../utils/lang';
 import UpdateBody from '../domain/UpdateBody';
 import RegisterBody from '../domain/RegisterBody';
+import * as jwt from '../utils/jwt';
 
 import User from '../models/user';
+
+let bcrypt = require('bcrypt');
 
 /**
  * Create user
@@ -75,7 +80,7 @@ export function fetchAll(): Promise<{}> {
 export function update(body: UpdateBody): Promise<{}> {
   return knex('users')
     .where('id', body.id)
-    .update({ 
+    .update({
       name: body.name,
       email: body.email,
       password: body.password
@@ -102,3 +107,52 @@ export function removeUserById(id: number): Promise<{}> {
       }
     }));
 }
+
+export async function validateUser(user: any): {} {
+  try {
+    let users = await findByEmail(user.email);
+    if (bcrypt.compareSync(user.password, users.toJSON().password)) {
+      return users;
+    } else {
+      throw new Boom.notFound('Invalid password');
+    }
+  } catch (err) {
+    throw err;
+  }
+}
+
+
+export async function loginUser(user:any): {} {
+  try {
+    let validUser = await validateUser(user);
+    let accessToken = await jwt.generateAccessToken(user);
+    let refreshToken = await jwt.generateRefreshToken(user);
+
+    validUser.token().save({
+      token: refreshToken
+    });
+
+    return {
+      user: validUser,
+      token: {
+        access: accessToken,
+        refresh: refreshToken
+      }
+    };
+  } catch (err) {
+    throw err;
+  }
+}
+
+export function validateRefreshToken(token) {
+  return new Token({
+    token
+  }).fetch().then(token => {
+    if (!token) {
+      throw new Boom.notFound('Token not found');
+    }
+
+    return token;
+  });
+}
+
