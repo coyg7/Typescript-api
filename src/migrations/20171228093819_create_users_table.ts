@@ -1,3 +1,6 @@
+import * as Knex from 'knex';
+import { SchemaBuilder } from 'knex';
+
 /**
  * @param  {object} knex
  * @return {Promise}

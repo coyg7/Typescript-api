@@ -1,4 +1,4 @@
-import bookshelf from '../db';
+import bookshelf from '../config/db';
 import user from './user';
 
 const TABLE_NAME = 'tokens';

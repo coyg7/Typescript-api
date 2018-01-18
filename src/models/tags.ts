@@ -1,4 +1,4 @@
-import bookshelf from '../db';
+import bookshelf from '../config/db';
 import todo from '../models/todo';
 
 const TABLE_NAME = 'tags';

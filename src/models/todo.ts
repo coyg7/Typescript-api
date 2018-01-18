@@ -1,6 +1,6 @@
-import bookshelf from '../db';
-import user from '../models/user';
-import tags from '../models/tags';
+import bookshelf from '../config/db';
+import user from './user';
+import tags from './tags';
 
 const TABLE_NAME = 'todos';
 
@@ -17,13 +17,13 @@ const TABLE_NAME = 'todos';
     return true;
   }
 
-  user() {
-    return this.belongsTo(user);
-  }
+  // user() {
+  //   return this.belongsTo(user);
+  // }
 
-  tags() {
-    return this.belongsToMany(tags);
-  }
+  // tags() {
+  //   return this.belongsToMany(tags);
+  // }
  }
 
  export default Todo;
