@@ -1,5 +1,4 @@
-import auth from '../env';
-var jwt = require('jsonwebtoken');
+import * as jwt from 'jsonwebtoken';
 
 /**
  * Return access token.
@@ -7,8 +6,8 @@ var jwt = require('jsonwebtoken');
  * @param data
  * @returns {string}
  */
-export function generateAccessToken(data) {
-  return jwt.sign({ encryptedData: 'data' }, "secret", { expiresIn: 20 });
+export function generateAccessToken(data: {}): string {
+  return jwt.sign({ encryptedData: data }, 'secret', { expiresIn: 1200000 });
 }
 
 
@@ -18,8 +17,8 @@ export function generateAccessToken(data) {
  * @param data
  * @returns {string}
  */
-export function generateRefreshToken(data) {
-  return jwt.sign({ encryptedData: data}, "refreshsecret", { expiresIn: 120000 });
+export function generateRefreshToken(data:{}): string {
+  return jwt.sign({ encryptedData: data}, 'refreshsecret', { expiresIn: 1200000000000 });
 }
 
 
@@ -27,16 +26,16 @@ export function generateRefreshToken(data) {
  * Verify access token.
  *
  */
-export function verifyAccessToken(token) {
-  return jwt.verify(token, "secret");
+export function verifyAccessToken(token: string): object | string {
+  return jwt.verify(token, 'secret');
 }
 
 
 /**
  * Verify refresh token
  */
-export function verifyRefreshToken(token) {
-  return jwt.verify(token, "refreshsecret");
+export function verifyRefreshToken(token: string): object | string {
+  return jwt.verify(token, 'refreshsecret');
 }
 
 

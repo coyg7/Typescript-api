@@ -4,7 +4,7 @@
  * @return {Promise}
  */
 export function up(knex) {
-  return knex.schema.createTable('tags_todo', table => {
+  return knex.schema.createTable('tags_todos', table => {
     table
       .integer('tag_id')
       .references('tags.id')
@@ -23,7 +23,6 @@ export function up(knex) {
  */
 export function down(knex) {
   return knex.schema
-    .dropTable('tags_todo')
-    .dropTable('tags')
-    .dropTable('todos');
+    .dropTable('tags_todos');
+
 }

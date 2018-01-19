@@ -4,11 +4,17 @@ import * as express from 'express';
 import config from './config/config';
 import * as bodyParser from 'body-parser';
 import * as errorHandler from './middlewares/errorHandler';
+import * as compression from 'compression';
+import * as helmet from 'helmet';
+import * as morgan from 'morgan';
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(helmet());
+app.use(compression());
+app.use(morgan('dev'));
 
 // API Routes
 app.use('/api', routes);

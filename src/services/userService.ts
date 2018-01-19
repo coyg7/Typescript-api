@@ -1,27 +1,31 @@
 import * as Boom from 'boom';
-import Token from '../models/tokens';
-
-import { knex } from '../config/db';
+import knex from '../config/db';
 import lang from '../utils/lang';
+import * as bcrypt from 'bcrypt';
+import User from '../models/user';
+import * as jwt from '../utils/jwt';
+import * as Bluebird from 'bluebird';
+import Ilogin from '../domain/Login';
+import LoginOutput from '../domain/LoginOutput';
+import Token from '../models/tokens';
 import UpdateBody from '../domain/UpdateBody';
 import RegisterBody from '../domain/RegisterBody';
-import * as jwt from '../utils/jwt';
-
-import User from '../models/user';
-
-let bcrypt = require('bcrypt');
 
 /**
  * Create user
  *
  * @param  {RegisterBody} body
- * @returns Promise
+ * @returns {Bluebird}
  */
-export function create(body: RegisterBody): Promise<{}> {
-  return knex('users')
-    .insert({ name: body.name, email: body.email, password: body.password })
-    .returning('*')
-    .then((data: number[]) => ({ data: data[0] }));
+export function createUser(user: RegisterBody): Bluebird<{}> {
+  return new User({
+    name: user.name,
+    email: user.email,
+    password: bcrypt.hashSync(user.password, 8)
+  })
+    .save()
+    .then((user:{}) => user)
+    .catch((err:any) => err);
 }
 
 /**
@@ -30,34 +34,15 @@ export function create(body: RegisterBody): Promise<{}> {
  * @param  {number} id
  */
 export function findById(id: number) {
-  return knex('users')
-    .where('id', '=', id)
-    .first()
-    .then((user: {}) => {
-      if (!user) {
-        throw Boom.notFound(lang.userNotFound);
-      }
+  return new User({id})
+  .fetch()
+  .then((user: {}) => {
+    if (!user) {
+      throw Boom.notFound('User not found');
+    }
 
-      return { data: user };
-    });
-}
-
-/**
- * Fetch user by email
- *
- * @param  {string} email
- */
-export function findByEmail(email: string) {
-  return knex('users')
-    .where('email', '=', email)
-    .first()
-    .then((user: {}) => {
-      if (!user) {
-        throw Boom.notFound(lang.userNotFound);
-      }
-
-      return { data: user };
-    });
+    return user;
+  });
 }
 
 /**
@@ -65,69 +50,41 @@ export function findByEmail(email: string) {
  *
  * @returns Promise
  */
-export function fetchAll(): Promise<{}> {
-  return knex('users')
-    .select()
-    .then((data: {}) => ({ data }));
+export function fetchAll(): Bluebird<{}> {
+  return User.fetchAll();
 }
 
 /**
  * Update specific user
  *
  * @param  {UpdateBody} body
- * @returns Promise
+ * @returns {Bluebird}
  */
-export function update(body: UpdateBody): Promise<{}> {
-  return knex('users')
-    .where('id', body.id)
-    .update({
-      name: body.name,
-      email: body.email,
-      password: body.password
-    })
-    .returning('*')
-    .then((data: number[]) => ({ data: data[0] }));
+export function update(id: number, body: {}): Bluebird<{}> {
+  return new User({ id })
+    .save({ name: body.name, email: body.email, password: body.password })
+    .then((user: {}) => user)
+    .catch((err: any) => err);
 }
 
 /**
  * Remove specific user
  *
  * @param  {number} id
- * @returns Promise
+ * @returns {Bluebird}
  */
-export function removeUserById(id: number): Promise<{}> {
-  console.log(id);
-  return knex('users')
-    .where('id', id)
-    .delete()
-    .then((user: {}) => ({
-      message: 'User deleted successfully',
-      data: {
-        id: user
-      }
-    }));
+export function removeUserById(id: number): Bluebird<{}> {
+  return new User({ id })
+    .fetch()
+    .then(token => token.destroy())
+    .catch ((err: any) => err); 
 }
 
-export async function validateUser(user: any): {} {
-  try {
-    let users = await findByEmail(user.email);
-    if (bcrypt.compareSync(user.password, users.toJSON().password)) {
-      return users;
-    } else {
-      throw new Boom.notFound('Invalid password');
-    }
-  } catch (err) {
-    throw err;
-  }
-}
-
-
-export async function loginUser(user:any): {} {
+export async function loginUser(user:Ilogin): Bluebird<LoginOutput>{
   try {
     let validUser = await validateUser(user);
     let accessToken = await jwt.generateAccessToken(user);
     let refreshToken = await jwt.generateRefreshToken(user);
-
     validUser.token().save({
       token: refreshToken
     });
@@ -135,24 +92,60 @@ export async function loginUser(user:any): {} {
     return {
       user: validUser,
       token: {
-        access: accessToken,
-        refresh: refreshToken
+        accessToken,
+        refreshToken
       }
     };
   } catch (err) {
     throw err;
   }
 }
+export async function validateUser(user:Ilogin): Bluebird<any> {
+  try {
+    let users = await getUserByEmail(user.email);
+    if (bcrypt.compareSync(user.password, users.toJSON().password)) {
+      return users;
+    } else {
+      throw Boom.notFound('Invalid password');
+    }
+  } catch (err) {
+    throw err;
+  }
+}
 
-export function validateRefreshToken(token) {
-  return new Token({
-    token
-  }).fetch().then(token => {
-    if (!token) {
-      throw new Boom.notFound('Token not found');
+export function getUserByEmail(email:string): Bluebird<any> {
+  let user = new User({ email }).fetch();
+  return user.then((user: {}) => {
+    if (!user) {
+      throw Boom.notFound('User not found');
     }
 
-    return token;
+    return user;
   });
 }
 
+export function deleteUser(token:string):Bluebird<any> {
+  try {
+    jwt.verifyRefreshToken(token);
+    return new Token({ token})
+      .fetch()
+      .then((token:{}) => token.destroy());
+  } catch (error) {
+    throw error;
+  }
+}
+export async function verifyUser(token:string) {
+  return await jwt.verifyAccessToken(token);
+}
+
+export function validateRefreshToken(token: string): Bluebird<Token> {
+  return new Token({ token })
+    .fetch()
+    .then(token => {
+      if (!token) {
+        throw Boom.notFound('Token not found');
+      }
+
+      return token;
+    });
+}

@@ -1,24 +1,12 @@
 import { Router } from 'express';
-import homeController from './controllers/homeController';
-import userController from './controllers/userController';
-import todoController from './controllers/todoController';
-import usersRegisterController from './controllers/usersRegisterController';
-import usersLoginController from './controllers/userLoginController';
-// import { uniqueEmail, userExists } from './validators/userValidator';
+import * as homeController from './controllers/homeController';
+import  usersController  from './controllers/userController';
+import authController from './controllers/authController';
+import { uniqueEmail, userExists } from './validators/userValidator';
 
-const router = Router();
-
-router.use('/', homeController);
-
-router.use('/users', userController);
-router.use('/todo', todoController );
-router.use('/register', usersRegisterController);
-router.use('/login',usersLoginController);
-
-// router.get('/users', userController.index);
-// router.get('/users/:id', userController.show);
-// router.post('/register', uniqueEmail, userController.register);
-// router.put('/users/:id', userExists, userController.update);
-// router.delete('/users/:id', userExists, userController.remove);
+let router = Router();
+router.get('/', homeController.index);
+router.use('/users', usersController);
+router.use('/', authController);
 
 export default router;
