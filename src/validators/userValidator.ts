@@ -30,3 +30,17 @@ export function userExists(req: Request, res: Response, next: NextFunction) {
     .then(() => next())
     .catch(() => next(Boom.notFound(lang.userNotFound)));
 }
+
+
+export async function validateUser(user:LoginInput): Bluebird<any> {
+  try {
+    let users = await getUserByEmail(user.email);
+    if (bcrypt.compareSync(user.password, users.toJSON().password)) {
+      return users;
+    } else {
+      throw Boom.notFound('Invalid password');
+    }
+  } catch (err) {
+    throw err;
+  }
+}

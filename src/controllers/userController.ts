@@ -87,8 +87,15 @@ router.post('/:id/todo', ensureToken, (req: Request, res: Response, next: NextFu
     .catch((err: any) => next(err));
 });
 
+/**
+ * Get user-specific todo
+ *
+ * @param  {Request} req
+ * @param  {Response} res
+ * @param  {NextFunction} next
+ * @returns void
+ */
 router.get('/:id/todo', ensureToken,(req: Request, res: Response, next: NextFunction):void => {
-  console.log()
   if(req.query){
 
     todoService
@@ -103,6 +110,15 @@ router.get('/:id/todo', ensureToken,(req: Request, res: Response, next: NextFunc
       .catch((err: any) => next(err));
   }
 });
+
+/**
+ * Get user-specific todo by Page Number
+ *
+ * @param  {Request} req
+ * @param  {Response} res
+ * @param  {NextFunction} next
+ * @returns void
+ */
 router.get('/:id/todo/:pageNo', ensureToken, (req: Request, res: Response, next: NextFunction):void => {
   todoService
     .getUserPageTodo(req.params.id, req.params.pageNo)
@@ -110,6 +126,9 @@ router.get('/:id/todo/:pageNo', ensureToken, (req: Request, res: Response, next:
     .catch((err: any) => next(err));
 });
 
+/**
+ * Get user-specific todo by TODO_ID
+ */
 router.put('/:id/todo/:todoId', ensureToken, (req: Request, res: Response, next: NextFunction):void => {
     todoService
       .updateTodo(req.params.todoId, req.body)
@@ -117,7 +136,15 @@ router.put('/:id/todo/:todoId', ensureToken, (req: Request, res: Response, next:
       .catch((err:any) => next(err));
   }
 );
-      
+
+/**
+ * DELETE user-specific todo by Todo number
+ *
+ * @param  {Request} req
+ * @param  {Response} res
+ * @param  {NextFunction} next
+ * @returns void
+ */
 router.delete('/:id/todo/:todoId', ensureToken, (req: Request, res: Response, next: NextFunction):void  => {
   todoService
     .deleteTodo(req.params.todoId)
